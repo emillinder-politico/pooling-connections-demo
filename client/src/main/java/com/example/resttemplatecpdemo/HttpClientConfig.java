@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
@@ -39,6 +40,7 @@ import java.util.concurrent.TimeUnit;
  * - Starts an idle connection monitor to continuously clean up stale connections.
  */
 @Configuration
+@Profile("complex")
 @EnableScheduling
 public class HttpClientConfig {
 
@@ -53,7 +55,7 @@ public class HttpClientConfig {
     // The timeout for waiting for data
     private static final int SOCKET_TIMEOUT = 60000;
 
-    private static final int MAX_TOTAL_CONNECTIONS = 50;
+    private static final int MAX_TOTAL_CONNECTIONS = 10;
     private static final int DEFAULT_KEEP_ALIVE_TIME_MILLIS = 20 * 1000;
     private static final int CLOSE_IDLE_CONNECTION_WAIT_TIME_SECS = 30;
 
@@ -117,6 +119,7 @@ public class HttpClientConfig {
                 .setDefaultRequestConfig(requestConfig)
                 .setConnectionManager(poolingConnectionManager())
                 .setKeepAliveStrategy(connectionKeepAliveStrategy())
+//                .evictIdleConnections(CLOSE_IDLE_CONNECTION_WAIT_TIME_SECS, TimeUnit.SECONDS) // equiv to idleConnectionMonitor?
                 .build();
     }
 
